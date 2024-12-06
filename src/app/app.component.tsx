@@ -75,7 +75,7 @@ export const App: React.FC = () => {
       if (newValue >= 31) {
         incrementMonth();
       }
-      return formatDateTimeUnit(newValue % 31);
+      return formatDateTimeUnit(Math.max(newValue % 31, 1));
     });
   }, [incrementMonth]);
 
@@ -144,6 +144,10 @@ export const App: React.FC = () => {
   }, [incrementHours, decrementHours]);
 
   const handleYearChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+    setYear(event.target.value);
+  }, []);
+
+  const handleYearBlur = useCallback((event: React.FocusEvent<HTMLInputElement>) => {
     const parsedValue = parseInt(event.target.value);
     setYear(isNaN(parsedValue) ? event.target.value : formatDateTimeUnit(parsedValue, 4));
   }, []);
@@ -153,71 +157,103 @@ export const App: React.FC = () => {
   }, []);
 
   const handleDayChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+    setDay(event.target.value);
+  }, []);
+
+  const handleDayBlur = useCallback((event: React.FocusEvent<HTMLInputElement>) => {
     const parsedValue = parseInt(event.target.value);
     setDay(isNaN(parsedValue) ? event.target.value : formatDateTimeUnit(parsedValue % 31));
   }, []);
 
   const handleHoursChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+    setHours(event.target.value);
+  }, []);
+
+  const handleHoursBlur = useCallback((event: React.FocusEvent<HTMLInputElement>) => {
     const parsedValue = parseInt(event.target.value);
     setHours(isNaN(parsedValue) ? event.target.value : formatDateTimeUnit(parsedValue % 24));
   }, []);
 
   const handleMinutesChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+    setMinutes(event.target.value);
+  }, []);
+
+  const handleMinutesBlur = useCallback((event: React.FocusEvent<HTMLInputElement>) => {
     const parsedValue = parseInt(event.target.value);
     setMinutes(isNaN(parsedValue) ? event.target.value : formatDateTimeUnit(parsedValue % 60));
   }, []);
 
   return (
-    <div className="m-auto flex items-center max-md:flex-col max-md:space-y-4 md:space-x-4">
-      <div className="flex w-[100px] flex-col space-y-2">
-        <Button className="w-full" variant="outline" size="icon" onClick={incrementYear}>
-          <ChevronUp className="size-2" />
-        </Button>
-        <Input className="w-full text-center" value={year} onChange={handleYearChange} type="number" />
-        <Button className="w-full" variant="outline" size="icon" onClick={decrementYear}>
-          <ChevronDown className="size-2" />
-        </Button>
-      </div>
-
-      <div className="flex w-[200px] flex-col space-y-2">
-        <Button className="w-full" variant="outline" size="icon" onClick={incrementMonth}>
-          <ChevronUp className="size-2" />
-        </Button>
-        <Select value={month} onValueChange={handleMonthChange}>
-          <SelectTrigger className="w-full">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectGroup>
-              {MONTHS.map((monthItem) => (
-                <SelectItem value={monthItem} key={monthItem}>
-                  {monthItem}
-                </SelectItem>
-              ))}
-            </SelectGroup>
-          </SelectContent>
-        </Select>
-        <Button className="w-full" variant="outline" size="icon" onClick={decrementMonth}>
-          <ChevronDown className="size-2" />
-        </Button>
-      </div>
-
-      <div className="flex w-[60px] flex-col space-y-2">
-        <Button className="w-full" variant="outline" size="icon" onClick={incrementDay}>
-          <ChevronUp className="size-2" />
-        </Button>
-        <Input className="w-full text-center" value={day} onChange={handleDayChange} type="number" />
-        <Button className="w-full" variant="outline" size="icon" onClick={decrementDay}>
-          <ChevronDown className="size-2" />
-        </Button>
-      </div>
-
+    <div className="m-auto flex items-center max-md:flex-col max-md:space-y-4 md:space-x-8">
       <div className="flex items-center space-x-4">
+        <div className="flex w-[80px] flex-col space-y-2">
+          <Button className="w-full" variant="outline" size="icon" onClick={incrementYear}>
+            <ChevronUp className="size-2" />
+          </Button>
+          <Input
+            className="w-full text-center"
+            value={year}
+            onChange={handleYearChange}
+            onBlur={handleYearBlur}
+            type="number"
+          />
+          <Button className="w-full" variant="outline" size="icon" onClick={decrementYear}>
+            <ChevronDown className="size-2" />
+          </Button>
+        </div>
+
+        <div className="flex w-[140px] flex-col space-y-2">
+          <Button className="w-full" variant="outline" size="icon" onClick={incrementMonth}>
+            <ChevronUp className="size-2" />
+          </Button>
+          <Select value={month} onValueChange={handleMonthChange}>
+            <SelectTrigger className="w-full">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                {MONTHS.map((monthItem) => (
+                  <SelectItem value={monthItem} key={monthItem}>
+                    {monthItem}
+                  </SelectItem>
+                ))}
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+          <Button className="w-full" variant="outline" size="icon" onClick={decrementMonth}>
+            <ChevronDown className="size-2" />
+          </Button>
+        </div>
+
+        <div className="flex w-[60px] flex-col space-y-2">
+          <Button className="w-full" variant="outline" size="icon" onClick={incrementDay}>
+            <ChevronUp className="size-2" />
+          </Button>
+          <Input
+            className="w-full text-center"
+            value={day}
+            onChange={handleDayChange}
+            onBlur={handleDayBlur}
+            type="number"
+          />
+          <Button className="w-full" variant="outline" size="icon" onClick={decrementDay}>
+            <ChevronDown className="size-2" />
+          </Button>
+        </div>
+      </div>
+
+      <div className="flex items-center space-x-2">
         <div className="flex w-[60px] flex-col space-y-2">
           <Button className="w-full" variant="outline" size="icon" onClick={incrementHours}>
             <ChevronUp className="size-2" />
           </Button>
-          <Input className="w-full text-center" value={hours} onChange={handleHoursChange} type="number" />
+          <Input
+            className="w-full text-center"
+            value={hours}
+            onChange={handleHoursChange}
+            onBlur={handleHoursBlur}
+            type="number"
+          />
           <Button className="w-full" variant="outline" size="icon" onClick={decrementHours}>
             <ChevronDown className="size-2" />
           </Button>
@@ -229,7 +265,13 @@ export const App: React.FC = () => {
           <Button className="w-full" variant="outline" size="icon" onClick={incrementMinutes}>
             <ChevronUp className="size-2" />
           </Button>
-          <Input className="w-full text-center" value={minutes} onChange={handleMinutesChange} type="number" />
+          <Input
+            className="w-full text-center"
+            value={minutes}
+            onChange={handleMinutesChange}
+            onBlur={handleMinutesBlur}
+            type="number"
+          />
           <Button className="w-full" variant="outline" size="icon" onClick={decrementMinutes}>
             <ChevronDown className="size-2" />
           </Button>
